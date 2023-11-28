@@ -1,3 +1,4 @@
+(*
 module JsonMsg = struct 
         type t = { 
                 delay: float;
@@ -12,3 +13,4 @@ let run json_msg =
         | true -> while true do List.iter (fun  x -> Writer.write x; Unix.sleepf delay ) animation done 
         | false -> List.iter (fun  x -> (Utils.debug ?prefix: (Some " current msg: ") (Protcol.Msg.to_string x)); Writer.write x; Unix.sleepf delay ) animation
 end
+        *)

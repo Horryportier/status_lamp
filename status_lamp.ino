@@ -4,7 +4,7 @@
 #define NUM_PIXELS 16
 #define PIXELS_PIN 6
 
-#define DEBUG 0
+#define DEBUG 1
 
 #define STATUS_R 9
 #define STATUS_G 10
@@ -75,18 +75,22 @@ void read_msg() {
   DynamicJsonDocument doc(1024);
   deserializeJson(doc, Serial);
 
-  String msg_type = doc["msg_type"];
-  if ( msg_type == "set_ring" ) {
+  String msg_type = doc["msg"][0];
+  debug(msg_type);
+  if ( msg_type == "Pixel_Strip" ) {
     for(int i = 0; i < NUM_PIXELS; i++) {
-      strip.setPixelColor(i, strip.Color(doc["msg"][i]["r"],doc["msg"][i]["g"],doc["msg"][i]["b"]));
+      strip.setPixelColor(i, strip.Color(doc["msg"][1][i]["r"],doc["msg"][1][i]["g"],doc["msg"][1][i]["b"]));
       strip.show();
     }
   }
-  if ( msg_type == "set_center" ) {
-      set_center(doc["msg"]["r"],doc["msg"]["g"],doc["msg"]["b"]);
+  if ( msg_type == "Center_Led" ) {
+      String x = doc["msg"][0];
+      debug(x);
+      set_center(doc["msg"][1]["r"],doc["msg"][1]["g"],doc["msg"][1]["b"]);
   }
-  if ( msg_type == "switch_pin" ) {
-     set_pin(doc["msg"]["pin"],doc["msg"]["value"],doc["msg"]["analog"]);
+  // { "msg_type": "switch_pin", "msg": { "pin": 2, "value": 1} }
+  if ( msg_type == "PIN" ) {
+     set_pin(doc["msg"][1]["pin"],doc["msg"][1]["value"],doc["msg"][1]["analog"]);
   }
   if ( msg_type == "animation" ) {
   }

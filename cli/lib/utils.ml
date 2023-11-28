@@ -1,3 +1,4 @@
+(*
 let is_debug = false;;
 let debug ?(prefix="") x = if is_debug then Printf.printf "%s %s\n" prefix x;;
 
@@ -21,3 +22,11 @@ let def_if_no_color (r, g, b) =
         match r, g, b with
                 | 0, 0, 0 -> def_color
                 | _, _, _ -> (r, g, b)
+        *)
+
+let n_sized_list_of_item a size =  
+        let rec inner a size acum =  
+        match size with 
+        | 0 -> acum 
+        | s -> inner a (s - 1) ( a :: acum)in
+        inner  a size []

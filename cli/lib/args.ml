@@ -1,3 +1,4 @@
+(*
 open Arg
 type arguments = {
         input_file: string;
@@ -72,4 +73,4 @@ let eval arguments =
                | _ -> raise NOT_VALID_PRESSET
         else
            Writer.write arguments.msg;;
-
+        *)
