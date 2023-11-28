@@ -1,0 +1,4 @@
+(executable
+ (public_name cli)
+ (name main)
+ (libraries cli yojson serial))
