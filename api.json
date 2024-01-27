@@ -1,0 +1,42 @@
+{
+    "op": 1
+},
+
+{
+    "op": 2,
+    "data": {
+        "color": {
+            "r": 24,
+            "g": 4,
+            "b": 34
+        },
+        "fill": {
+            "start": 0,
+            "stop": 16
+        }
+    }
+},
+{
+    "op": 3,
+    "data": {
+        "color": {
+            "r": 24,
+            "g": 4,
+            "b": 34
+        } }
+},
+{
+    "op": 4,
+    "data": {
+        "pin": 2,
+        "value": 1,
+        "analog": false
+        }
+},
+{
+    "op": 5,
+    "data": {
+        "pin": 2,
+        "analog": false
+        }
+}

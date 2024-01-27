@@ -1,6 +1,0 @@
-(library
- (name cli )
-
-(libraries  yojson core ppx_deriving_yojson.runtime serial unix stdune sexplib)
-(preprocess (pps ppx_deriving_yojson ppx_deriving.show ppx_deriving.ord))
-)
