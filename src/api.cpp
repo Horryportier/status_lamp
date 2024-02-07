@@ -9,7 +9,6 @@ String serialize_response(Response *respones) {
   JsonDocument doc;
   doc["op"] = respones->op;
   doc["msg_code"] = respones->msg_code;
-  doc["job_name"] = respones->job_name;
   doc["msg"] = respones->msg;
   String res = "";
   serializeJson(doc, res);

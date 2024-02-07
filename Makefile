@@ -13,3 +13,5 @@ program:
 
 uploadfs:
 	platformio -f -c vim run --target uploadfs
+server:
+	cd cli; make 

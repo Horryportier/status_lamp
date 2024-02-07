@@ -4,17 +4,16 @@
 
 // response will be negative of msg type
 typedef enum {
-  HELLO = 1,
-  SET_RING = 2,
-  SET_MIDDLE = 3,
-  SET_PIN = 4,
-  GET_PIN = 5,
-} OP_CODES;
+    Hello = 1,
+    SetRing = 2,
+    SetMiddle = 3,
+    SetPin = 4,
+    GetPin = 5,
+} OptCodes;
 
 typedef struct {
   int8_t op;
   uint8_t msg_code;
-  String job_name;
   String msg;
 } Response;
 
@@ -70,5 +69,4 @@ typedef struct {
 
 set_middle_msg deserialize_set_middle(const JsonDocument doc);
 void set_middle(set_middle_msg msg, Adafruit_NeoPixel * pixels);
-
 
