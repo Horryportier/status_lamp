@@ -28,6 +28,8 @@ macro_rules! if_arg {
 pub struct Args {
     #[arg(short, long)]
     server: bool,
+    #[arg(short, long)]
+    quiet: bool,
     #[arg(long)]
     analog: bool,
     #[arg(long)]
@@ -66,7 +68,9 @@ impl Args {
                 }),
             };
             let a = client(msg)?;
+            if !self.quiet {
             println!("{:?}", serde_json::from_slice::<Response>(a.as_slice()));
+            }
             Ok(())
         };
         if_arg!(self.set_middle, send_middle_msg()?);
@@ -77,7 +81,10 @@ impl Args {
                 data: MsgKind::SetRing(crate::opt::SetRing { color, fill }),
             };
             let a = client(msg)?;
+
+            if !self.quiet {
             println!("{:?}", serde_json::from_slice::<Response>(a.as_slice()));
+            }
             Ok(())
         };
         if_arg!(self.set_ring, send_ring_msg()?);
@@ -92,7 +99,9 @@ impl Args {
             };
             let a = client(msg)?;
 
+            if !self.quiet {
             println!("{:?}", serde_json::from_slice::<Response>(a.as_slice()));
+            }
             Ok(())
         };
         if_arg!(self.get_pin, send_get_pin_msg()?);
@@ -108,7 +117,9 @@ impl Args {
                 }),
             };
             let a = client(msg)?;
+            if !self.quiet {
             println!("{:?}", serde_json::from_slice::<Response>(a.as_slice()));
+            }
             Ok(())
         };
         if_arg!(self.set_pin, send_set_pin_msg()?);
