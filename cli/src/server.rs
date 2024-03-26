@@ -10,8 +10,10 @@ use std::{
     io::{Read, Write},
     os::unix::net::{UnixListener, UnixStream},
     path::Path,
+    thread::sleep,
+    time::Duration,
 };
-
+const MAX_RETRIES: usize = 32;
 pub trait MsgHandler {
     fn handle_stream(&mut self, stream: UnixStream) -> anyhow::Result<()>;
 }
@@ -27,7 +29,6 @@ impl MsgHandler for EchoHandler {
         Ok(())
     }
 }
-
 
 pub struct ArduinoSerialHandrel {
     pub port: Box<dyn SerialPort>,
@@ -56,8 +57,25 @@ impl MsgHandler for ArduinoSerialHandrel {
 }
 
 pub fn server_init() -> anyhow::Result<()> {
-    let ash = ArduinoSerialHandrel::init(None)?;
-    server(ash)?;
+    let ash = |_| {
+        for i in 0..MAX_RETRIES {
+            let a = ArduinoSerialHandrel::init(None);
+            match a {
+                Ok(ah) => return Some(ah),
+                Err(err) => {
+                    if "No such file or directory" == err.to_string() {
+                        sleep(Duration::from_secs(2));
+                        eprintln!("[{i}] could not connect to arduino retrying");
+                        continue;
+                    } else {
+                        panic!("Could not connect to arduino {:?}", err);
+                    }
+                }
+            }
+        }
+        None
+    };
+    server(ash(()).unwrap())?;
     Ok(())
 }
 
