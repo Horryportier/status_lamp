@@ -69,7 +69,7 @@ impl Args {
             };
             let a = client(msg)?;
             if !self.quiet {
-            println!("{:?}", serde_json::from_slice::<Response>(a.as_slice()));
+                println!("{:?}", serde_json::from_slice::<Response>(a.as_slice()));
             }
             Ok(())
         };
@@ -83,7 +83,7 @@ impl Args {
             let a = client(msg)?;
 
             if !self.quiet {
-            println!("{:?}", serde_json::from_slice::<Response>(a.as_slice()));
+                println!("{:?}", serde_json::from_slice::<Response>(a.as_slice()));
             }
             Ok(())
         };
@@ -100,7 +100,7 @@ impl Args {
             let a = client(msg)?;
 
             if !self.quiet {
-            println!("{:?}", serde_json::from_slice::<Response>(a.as_slice()));
+                println!("{:?}", serde_json::from_slice::<Response>(a.as_slice()));
             }
             Ok(())
         };
@@ -118,7 +118,7 @@ impl Args {
             };
             let a = client(msg)?;
             if !self.quiet {
-            println!("{:?}", serde_json::from_slice::<Response>(a.as_slice()));
+                println!("{:?}", serde_json::from_slice::<Response>(a.as_slice()));
             }
             Ok(())
         };
@@ -127,8 +127,18 @@ impl Args {
         Ok(())
     }
 }
+fn hex_to_rgb(hex: String) -> Color {
+    let hex = hex.strip_prefix("#").unwrap_or("000000").trim();
+    let r = u8::from_str_radix(&hex.get(0..2).unwrap_or("0"), 16).unwrap();
+    let g = u8::from_str_radix(&hex.get(2..4).unwrap_or("0"), 16).unwrap();
+    let b = u8::from_str_radix(&hex.get(4..6).unwrap_or("0"), 16).unwrap();
+    Color { r, g, b }
+}
 
 fn color_from_string(s: String) -> anyhow::Result<Color> {
+    if s.starts_with("#") {
+        return Ok(hex_to_rgb(s));
+    }
     let v = s
         .split(" ")
         .map(|f| f.parse().unwrap_or(0))
