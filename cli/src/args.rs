@@ -48,6 +48,8 @@ pub struct Args {
     get_pin: bool,
     #[arg(long)]
     set_pin: bool,
+    #[arg(long)]
+    quit: bool,
 }
 
 impl Args {
@@ -124,6 +126,18 @@ impl Args {
         };
         if_arg!(self.set_pin, send_set_pin_msg()?);
 
+        let send_quit_msg = || -> anyhow::Result<()> {
+            let msg = Msg {
+                op: crate::opt::OptCodes::Quit,
+                data: MsgKind::Quit,
+            };
+            let a = client(msg)?;
+            if !self.quiet {
+                println!("{:?}", serde_json::from_slice::<Response>(a.as_slice()));
+            }
+            Ok(())
+        };
+        if_arg!(self.quit, send_quit_msg()?);
         Ok(())
     }
 }

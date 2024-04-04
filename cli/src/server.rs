@@ -2,6 +2,7 @@ use serialport::SerialPort;
 
 use crate::{
     common::SOCKET_PATH,
+    opt::MsgKind,
     port::{def_port, send_and_recive, setup_port},
 };
 
@@ -15,18 +16,18 @@ use std::{
 };
 const MAX_RETRIES: usize = 32;
 pub trait MsgHandler {
-    fn handle_stream(&mut self, stream: UnixStream) -> anyhow::Result<()>;
+    fn handle_stream(&mut self, stream: UnixStream) -> anyhow::Result<bool>;
 }
 
 #[derive(Clone, Copy)]
 pub struct EchoHandler;
 impl MsgHandler for EchoHandler {
-    fn handle_stream(&mut self, mut stream: UnixStream) -> anyhow::Result<()> {
+    fn handle_stream(&mut self, mut stream: UnixStream) -> anyhow::Result<bool> {
         let mut buf = String::new();
         stream.read_to_string(&mut buf)?;
         println!("{:?}", buf);
         stream.write(format!("echo {buf}").as_str().as_bytes())?;
-        Ok(())
+        Ok(false)
     }
 }
 
@@ -46,13 +47,16 @@ impl ArduinoSerialHandrel {
 }
 
 impl MsgHandler for ArduinoSerialHandrel {
-    fn handle_stream(&mut self, mut stream: UnixStream) -> anyhow::Result<()> {
+    fn handle_stream(&mut self, mut stream: UnixStream) -> anyhow::Result<bool> {
         let mut buf = String::new();
         stream.read_to_string(&mut buf)?;
-        let msg = serde_json::from_str(&buf)?;
-        let response = send_and_recive(&mut self.port, msg)?;
+        let msg: crate::opt::Msg = serde_json::from_str(&buf)?;
+        let response = send_and_recive(&mut self.port, msg.clone())?;
         stream.write(&serde_json::to_vec(&response)?)?;
-        Ok(())
+        if MsgKind::Quit == msg.data {
+            return Ok(true);
+        }
+        Ok(false)
     }
 }
 
@@ -90,6 +94,9 @@ pub fn server<T: MsgHandler>(mut handle: T) -> anyhow::Result<()> {
 
     loop {
         let (stream, _) = listener.accept()?;
-        handle.handle_stream(stream)?
+        if handle.handle_stream(stream)? {
+            println!("closing serever");
+            return Ok(());
+        }
     }
 }

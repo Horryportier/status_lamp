@@ -11,6 +11,7 @@ pub enum OptCodes {
     SetMiddle = 3,
     SetPin = 4,
     GetPin = 5,
+    Quit = 6,
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Default, Clone)]
@@ -33,7 +34,7 @@ pub struct Response {
     pub msg: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 #[serde(untagged)]
 pub enum MsgKind {
     Hello(HelloMsg),
@@ -41,6 +42,7 @@ pub enum MsgKind {
     GetPin(GetPin),
     SetRing(SetRing),
     SetMiddle(SetMiddle),
+    Quit,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -53,36 +55,36 @@ impl ToString for Msg {
     fn to_string(&self) -> String {
         match serde_json::to_string(self) {
             Ok(s) => s,
-            Err(e) => e.to_string()
+            Err(e) => e.to_string(),
         }
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 pub struct HelloMsg {
     pub msg: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 pub struct GetPin {
     pub pin: usize,
     pub analog: bool,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 pub struct SetPin {
     pub pin: usize,
     pub value: usize,
     pub analog: bool,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 pub struct SetRing {
     pub color: Color,
     pub fill: Fill,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 pub struct SetMiddle {
     pub color: Color,
 }
@@ -126,7 +128,7 @@ mod test {
 
         let msg = Msg {
             op: OptCodes::HELLO,
-            data:MsgKind::Hello( HelloMsg {
+            data: MsgKind::Hello(HelloMsg {
                 msg: "Hello World!".into(),
             }),
         };
@@ -140,17 +142,17 @@ mod test {
     #[ignore = "non concurent test"]
     #[test]
     fn test_get_pin() -> std::io::Result<()> {
-        let correct = Response{
+        let correct = Response {
             op: OptCodes::GetPin,
             msg_code: 200,
-            msg: "0".into()
+            msg: "0".into(),
         };
         let msg = Msg {
             op: OptCodes::GetPin,
-            data:MsgKind::GetPin( GetPin {
+            data: MsgKind::GetPin(GetPin {
                 pin: 2,
                 analog: false,
-            })
+            }),
         };
         let res = send_and_recive(def_port()?, msg)?;
         assert_eq!(res, correct);
@@ -159,18 +161,18 @@ mod test {
     #[ignore = "non concurent test"]
     #[test]
     fn test_set_pin() -> std::io::Result<()> {
-        let correct = Response{
+        let correct = Response {
             op: OptCodes::SetPin,
             msg_code: 200,
-            msg: "none".into()
+            msg: "none".into(),
         };
         let msg = Msg {
             op: OptCodes::SetPin,
-            data:MsgKind::SetPin( SetPin {
+            data: MsgKind::SetPin(SetPin {
                 pin: 2,
                 value: 1,
                 analog: false,
-            })
+            }),
         };
         let res = send_and_recive(def_port()?, msg)?;
         assert_eq!(res, correct);
@@ -179,16 +181,20 @@ mod test {
     #[ignore = "non concurent test"]
     #[test]
     fn test_set_middle() -> std::io::Result<()> {
-        let correct = Response{
+        let correct = Response {
             op: OptCodes::SetMiddle,
             msg_code: 200,
-            msg: "none".into()
+            msg: "none".into(),
         };
         let msg = Msg {
             op: OptCodes::SetMiddle,
-            data:MsgKind::SetMiddle( SetMiddle {
-                color: Color { r: 50, g: 10, b: 23 }
-            })
+            data: MsgKind::SetMiddle(SetMiddle {
+                color: Color {
+                    r: 50,
+                    g: 10,
+                    b: 23,
+                },
+            }),
         };
         let res = send_and_recive(def_port()?, msg)?;
         assert_eq!(res, correct);
